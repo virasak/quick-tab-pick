@@ -1,28 +1,30 @@
-import * as vscode from 'vscode';
+import { commands, ExtensionContext, QuickPickItem, QuickPickItemKind, Tab, TabGroup, TabInputText, ViewColumn, window, workspace } from 'vscode';
 
-type TabPickItem = vscode.QuickPickItem & { tab?: vscode.Tab & { input: vscode.TabInputText } };
+type EditorTab = Tab & { input: TabInputText };
 
-export function activate(context: vscode.ExtensionContext) {
-	let disposable = vscode.commands.registerCommand('quick-tab-pick.action.showTabs', async () => {
-		let fileUriItem: TabPickItem[] = [];
-		let viewColumn: vscode.ViewColumn = vscode.window.tabGroups.all[0].viewColumn;
+type TabPickItem = QuickPickItem & { tab?: EditorTab };
 
-		if (vscode.window.tabGroups.all.length > 1) {
-			fileUriItem.push({ label: 'Group ' + viewColumn, kind: vscode.QuickPickItemKind.Separator });
+export function activate(context: ExtensionContext) {
+	let disposable = commands.registerCommand('quick-tab-pick.action.showTabs', async () => {
+		let quickPickItems: TabPickItem[] = [];
+		let viewColumn: ViewColumn = window.tabGroups.all[0].viewColumn;
+
+		if (window.tabGroups.all.length > 1) {
+			quickPickItems.push({ label: 'Group ' + viewColumn, kind: QuickPickItemKind.Separator });
 		}
 
-		for (let tab of listTabs()) {
+		for (let tab of listEditorTabs(window.tabGroups.all)) {
 			if (viewColumn !== tab.group.viewColumn) {
 				viewColumn = tab.group.viewColumn;
-				fileUriItem.push({ label: 'Group ' + viewColumn, kind: vscode.QuickPickItemKind.Separator });
+				quickPickItems.push({ label: 'Group ' + viewColumn, kind: QuickPickItemKind.Separator });
 			}
 
-			let description = vscode.workspace.asRelativePath(tab.input.uri, false);
-			fileUriItem.push({ label: tab.label, description, tab });
+			let description = workspace.asRelativePath(tab.input.uri, false);
+			quickPickItems.push({ label: tab.label, description, tab });
 		}
 
-		let item = await vscode.window.showQuickPick(fileUriItem, { placeHolder: "Pick a tab", canPickMany: false, ignoreFocusOut: true });
-		item && item.tab && await vscode.window.showTextDocument(item.tab.input.uri, { viewColumn: item.tab.group.viewColumn });
+		let item = await window.showQuickPick(quickPickItems, { placeHolder: "Pick a tab", canPickMany: false, ignoreFocusOut: true });
+		item && item.tab && await window.showTextDocument(item.tab.input.uri, { viewColumn: item.tab.group.viewColumn });
 	});
 
 	context.subscriptions.push(disposable);
@@ -30,11 +32,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() { }
 
-function* listTabs() {
-	for (let group of vscode.window.tabGroups.all) {
+function* listEditorTabs(groups: readonly TabGroup[]) {
+	for (let group of groups) {
 		for (let tab of group.tabs) {
-			if (tab.input instanceof vscode.TabInputText) {
-				yield tab as vscode.Tab & { input: vscode.TabInputText };
+			if (tab.input instanceof TabInputText) {
+				yield tab as EditorTab;
 			}
 		}
 	}
