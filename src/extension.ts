@@ -1,22 +1,26 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 
-type FileUriItem = vscode.QuickPickItem & { uri: vscode.Uri; };
+type TabPickItem = vscode.QuickPickItem & { tab?: vscode.Tab & { input: vscode.TabInputText } };
 
 export function activate(context: vscode.ExtensionContext) {
 	let disposable = vscode.commands.registerCommand('quick-tab-pick.action.showTabs', async () => {
-		let fileUriItem: FileUriItem[] = [];
+		let fileUriItem: TabPickItem[] = [];
+		let viewColumn: vscode.ViewColumn | undefined;
 
-		for (let uri of listOpenFiles()) {
-			let label = path.basename(uri.path);
-			let description = vscode.workspace.asRelativePath(uri, false);
+		for (let tab of listTabs()) {
+			if (viewColumn !== tab.group.viewColumn) {
+				viewColumn = tab.group.viewColumn;
+				fileUriItem.push({ label: 'Group ' + viewColumn, kind: vscode.QuickPickItemKind.Separator });
+			}
 
-			fileUriItem.push({ label, description, uri });
+			let label = path.basename(tab.input.uri.path);
+			let description = vscode.workspace.asRelativePath(tab.input.uri, false);
+			fileUriItem.push({ label, description, tab });
 		}
 
 		let item = await vscode.window.showQuickPick(fileUriItem, { placeHolder: "Pick a tab", canPickMany: false, ignoreFocusOut: true });
-		item && await vscode.window.showTextDocument(item.uri);
-
+		item && item.tab && await vscode.window.showTextDocument(item.tab.input.uri, { viewColumn: item.tab.group.viewColumn });
 	});
 
 	context.subscriptions.push(disposable);
@@ -24,11 +28,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() { }
 
-function* listOpenFiles() {
+function* listTabs() {
+	let groupNumber = 0;
 	for (let group of vscode.window.tabGroups.all) {
 		for (let tab of group.tabs) {
 			if (tab.input instanceof vscode.TabInputText) {
-				yield tab.input.uri;
+				yield tab as vscode.Tab & { input: vscode.TabInputText };
 			}
 		}
 	}
