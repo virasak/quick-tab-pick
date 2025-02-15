@@ -5,7 +5,11 @@ type TabPickItem = vscode.QuickPickItem & { tab?: vscode.Tab & { input: vscode.T
 export function activate(context: vscode.ExtensionContext) {
 	let disposable = vscode.commands.registerCommand('quick-tab-pick.action.showTabs', async () => {
 		let fileUriItem: TabPickItem[] = [];
-		let viewColumn: vscode.ViewColumn | undefined;
+		let viewColumn: vscode.ViewColumn = vscode.window.tabGroups.all[0].viewColumn;
+
+		if (vscode.window.tabGroups.all.length > 1) {
+			fileUriItem.push({ label: 'Group ' + viewColumn, kind: vscode.QuickPickItemKind.Separator });
+		}
 
 		for (let tab of listTabs()) {
 			if (viewColumn !== tab.group.viewColumn) {
@@ -27,7 +31,6 @@ export function activate(context: vscode.ExtensionContext) {
 export function deactivate() { }
 
 function* listTabs() {
-	let groupNumber = 0;
 	for (let group of vscode.window.tabGroups.all) {
 		for (let tab of group.tabs) {
 			if (tab.input instanceof vscode.TabInputText) {
