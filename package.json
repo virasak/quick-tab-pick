@@ -2,6 +2,7 @@
   "name": "quick-tab-pick",
   "displayName": "Quick Tab Pick",
   "description": "Quick pick for tabs",
+  "publisher": "virasak-com",
   "repository": {
     "type": "git",
     "url": "https://github.com/virasak/quick-tab-pick"
