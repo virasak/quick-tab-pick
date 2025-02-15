@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import * as path from 'path';
 
 type TabPickItem = vscode.QuickPickItem & { tab?: vscode.Tab & { input: vscode.TabInputText } };
 
@@ -14,9 +13,8 @@ export function activate(context: vscode.ExtensionContext) {
 				fileUriItem.push({ label: 'Group ' + viewColumn, kind: vscode.QuickPickItemKind.Separator });
 			}
 
-			let label = path.basename(tab.input.uri.path);
 			let description = vscode.workspace.asRelativePath(tab.input.uri, false);
-			fileUriItem.push({ label, description, tab });
+			fileUriItem.push({ label: tab.label, description, tab });
 		}
 
 		let item = await vscode.window.showQuickPick(fileUriItem, { placeHolder: "Pick a tab", canPickMany: false, ignoreFocusOut: true });
