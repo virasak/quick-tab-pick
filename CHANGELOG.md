@@ -4,6 +4,10 @@
 
 -
 
+## [0.0.3]
+
+- Display groups when number of groups > 1
+
 ## [0.0.2]
 
 - Support multiple group picking
