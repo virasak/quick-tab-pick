@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/virasak/quick-tab-pick"
   },
-  "version": "0.0.3",
+  "version": "0.0.4",
   "engines": {
     "vscode": "^1.97.0"
   },
@@ -39,6 +39,7 @@
         "title": "Quick Tab Pick: Show Tabs"
       }
     ]
+    "s"
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

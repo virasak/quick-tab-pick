@@ -4,6 +4,11 @@
 
 -
 
+## [0.0.4]
+
+- Refactor
+
+
 ## [0.0.3]
 
 - Display groups when number of groups > 1
