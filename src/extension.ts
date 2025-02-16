@@ -34,8 +34,8 @@ export function activate(context: ExtensionContext) {
 export function deactivate() { }
 
 function* listEditorTabs(groups: readonly TabGroup[]) {
-	for (let group of groups) {
-		for (let tab of group.tabs) {
+	for (let { tabs } of groups) {
+		for (let tab of tabs) {
 			if (tab.input instanceof TabInputText) {
 				yield tab as EditorTab;
 			}
