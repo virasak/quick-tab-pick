@@ -9,3 +9,7 @@ Quick pick for tabs
 ## Limitation
 
 - Currently, user can pick only text document tab. Waiting thing for an API to active tab https://github.com/microsoft/vscode/issues/188572.
+
+## Screenshot
+
+![Screenshot of My Extension](https://raw.githubusercontent.com/virasak/quick-tab-pick/main/images/screenshot.png)
