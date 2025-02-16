@@ -1,4 +1,5 @@
-import { commands, ExtensionContext, QuickPickItem, QuickPickItemKind, Tab, TabGroup, TabInputText, ViewColumn, window, workspace } from 'vscode';
+import { commands, window, workspace } from 'vscode';
+import { ExtensionContext, QuickPickItem, QuickPickItemKind, Tab, TabGroup, TabInputText, ViewColumn, } from 'vscode';
 
 type EditorTab = Tab & { input: TabInputText };
 
@@ -23,7 +24,7 @@ export function activate(context: ExtensionContext) {
 			quickPickItems.push({ label: tab.label, description, tab });
 		}
 
-		let item = await window.showQuickPick(quickPickItems, { placeHolder: "Pick a tab", canPickMany: false, ignoreFocusOut: true });
+		let item = await window.showQuickPick(quickPickItems, { placeHolder: "Pick a tab", canPickMany: false });
 		item && item.tab && await window.showTextDocument(item.tab.input.uri, { viewColumn: item.tab.group.viewColumn });
 	});
 
